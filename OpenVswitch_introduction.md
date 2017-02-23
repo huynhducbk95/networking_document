@@ -74,8 +74,10 @@ Và thực hiện câu lệnh sau để add 2 tap vừa tạo vào br0:
 ```
 Kết quả chúng ta có được như sau:
 ![](https://github.com/huynhducbk95/networking_document/blob/master/image/check_add_ports.jpg?raw=true)
+
 Sau khi add 2 Tap đến br0. Bước cuối cùng là chúng ta tạo ra 2 VM, với cấu hình mạng là chế độ bridge và card mạng là vport1 và vport2 trên từng VM.
 ![](https://github.com/huynhducbk95/networking_document/blob/master/image/configure_vm1.jpg?raw=true)
+
 Như vậy là chúng ta đã tạo ra được một virtual switch br0 có chứa 1 port kết nối đến eth0, 1 port là vport1 kết nối đến VM1 và 1 port là vport2 kết nối đến VM2. Và 2 VM này đều được ping đến nhau và kết nối ra internet thông qua eth0. Chúng ta có thể kiểm tra ping ra internet trên vm1.
 ![](https://github.com/huynhducbk95/networking_document/blob/master/image/check_ping_vm1_gg.jpg?raw=true)
 Chúng ta cũng có thể sử dụng câu lệnh sau để xem thông tin các port và các VM đang kết nối đến br0.
