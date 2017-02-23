@@ -39,15 +39,13 @@ Kiểm tra kết quả bằng câu lệnh:
 
 ```
 Chúng ta sẽ thu được kết quả như sau:
-[image]
+![](https://github.com/huynhducbk95/networking_document/blob/master/image/create_br0.jpg?raw=true)
 Tiếp theo, chúng ta sẽ thực hiện kết nối br0 với card mạng đang kết nối ra internet:
 ```
 # ovs-vsctl add-port br0 eth0
 
 ```
-Sau khi thực hiện xong bước này, tạm thời máy tính của chúng ta sẽ bị mất mạng.
-[image]
-Nguyên nhân là do ban đầu, eth0 được kết nối đến IP Stack(là các ip sẽ được cấp khi máy tính thực hiện kết nối đến internet) và máy tính sẽ kết nối được internet. Trong khi đó, br0 được tạo ra đang bị tách biệt và chưa được cấp địa chỉ ip, do đó, khi kết nối eth0 và br0 thì sẽ làm mất kết nối đến IP Stack.
+Sau khi thực hiện xong bước này, tạm thời máy tính của chúng ta sẽ bị mất mạng. Nguyên nhân là do ban đầu, eth0 được kết nối đến IP Stack(là các ip sẽ được cấp khi máy tính thực hiện kết nối đến internet) và máy tính sẽ kết nối được internet. Trong khi đó, br0 được tạo ra đang bị tách biệt và chưa được cấp địa chỉ ip, do đó, khi kết nối eth0 và br0 thì sẽ làm mất kết nối đến IP Stack.
 
 Để giải quyết việc này, chúng ta thực hiện 2 bước. Đầu tiên, thực hiện câu lệnh sau để xóa địa chỉ ip hiện tại của eth0.
 ```
@@ -59,7 +57,9 @@ Tiếp theo, xin cấp phát địa chỉ ip cho br0:
 # dhclient br0
 
 ```
-Kết quả là chúng ta đã kết nối được internet. Sau đó, chúng ta sẽ tạo ra 2 Tap (card mạng ảo) để thêm vào cho br0.
+Kết quả là chúng ta đã kết nối được internet. 
+![](https://github.com/huynhducbk95/networking_document/blob/master/image/fix_ping_gg.jpg?raw=true)
+Sau đó, chúng ta sẽ tạo ra 2 Tap (card mạng ảo) để thêm vào cho br0.
 ```
 # ip tuntap add mode tap vport1
 # ip tuntap add mode tap vport2
@@ -73,19 +73,22 @@ Và thực hiện câu lệnh sau để add 2 tap vừa tạo vào br0:
 
 ```
 Kết quả chúng ta có được như sau:
-[image]
+![](https://github.com/huynhducbk95/networking_document/blob/master/image/check_add_ports.jpg?raw=true)
 Sau khi add 2 Tap đến br0. Bước cuối cùng là chúng ta tạo ra 2 VM, với cấu hình mạng là chế độ bridge và card mạng là vport1 và vport2 trên từng VM.
-[image]
+![](https://github.com/huynhducbk95/networking_document/blob/master/image/configure_vm1.jpg?raw=true)
 Như vậy là chúng ta đã tạo ra được một virtual switch br0 có chứa 1 port kết nối đến eth0, 1 port là vport1 kết nối đến VM1 và 1 port là vport2 kết nối đến VM2. Và 2 VM này đều được ping đến nhau và kết nối ra internet thông qua eth0. Chúng ta có thể kiểm tra ping ra internet trên vm1.
-[image]
+![](https://github.com/huynhducbk95/networking_document/blob/master/image/check_ping_vm1_gg.jpg?raw=true)
 Chúng ta cũng có thể sử dụng câu lệnh sau để xem thông tin các port và các VM đang kết nối đến br0.
 ```
 # ovs-appctl fdb/show br0
 
 ```
 Kết quả hiển thị như sau:
-[image]
+![](https://github.com/huynhducbk95/networking_document/blob/master/image/appctl.jpg?raw=true)
 ## Kết luận
 Trên đây là như kiến thức cơ bản nhất về Open Vswitch. Bạn có thể tìm thấy tài liệu chi tiết về Open Vswitch trên trang web [openvswitch.org](http://openvswitch.org)
 ## Tài liệu tham khảo
 
+- https://www.youtube.com/watch?v=rYW7kQRyUvA
+- http://docs.openvswitch.org/en/latest/
+- https://sreeninet.wordpress.com/2014/01/02/openvswitch-and-ovsdb/
