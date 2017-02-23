@@ -9,6 +9,7 @@ Nhưng chúng ta đã biết, công nghệ ảo hóa tạo ra các virtual machi
 OpenVswitch có thể được định nghĩa là một nền tảng tạo ra các virtual switch, mà hỗ trợ interface quản lý chuẩn và mở để có thể điều khiển và lập trình bởi người dùng.
 
 Kiến trúc cơ bản của OVS được thể hiện ở hình sau:
+
 ![](http://www.yet.org/images/posts/ovs-archi.png)
 
 Theo kiến trúc này, OVS có 3 thành phần chính sau đây:
@@ -39,7 +40,9 @@ Kiểm tra kết quả bằng câu lệnh:
 
 ```
 Chúng ta sẽ thu được kết quả như sau:
+
 ![](https://github.com/huynhducbk95/networking_document/blob/master/image/create_br0.jpg?raw=true)
+
 Tiếp theo, chúng ta sẽ thực hiện kết nối br0 với card mạng đang kết nối ra internet:
 ```
 # ovs-vsctl add-port br0 eth0
@@ -58,7 +61,9 @@ Tiếp theo, xin cấp phát địa chỉ ip cho br0:
 
 ```
 Kết quả là chúng ta đã kết nối được internet. 
+
 ![](https://github.com/huynhducbk95/networking_document/blob/master/image/fix_ping_gg.jpg?raw=true)
+
 Sau đó, chúng ta sẽ tạo ra 2 Tap (card mạng ảo) để thêm vào cho br0.
 ```
 # ip tuntap add mode tap vport1
@@ -73,19 +78,24 @@ Và thực hiện câu lệnh sau để add 2 tap vừa tạo vào br0:
 
 ```
 Kết quả chúng ta có được như sau:
+
 ![](https://github.com/huynhducbk95/networking_document/blob/master/image/check_add_ports.jpg?raw=true)
 
 Sau khi add 2 Tap đến br0. Bước cuối cùng là chúng ta tạo ra 2 VM, với cấu hình mạng là chế độ bridge và card mạng là vport1 và vport2 trên từng VM.
+
 ![](https://github.com/huynhducbk95/networking_document/blob/master/image/configure_vm1.jpg?raw=true)
 
 Như vậy là chúng ta đã tạo ra được một virtual switch br0 có chứa 1 port kết nối đến eth0, 1 port là vport1 kết nối đến VM1 và 1 port là vport2 kết nối đến VM2. Và 2 VM này đều được ping đến nhau và kết nối ra internet thông qua eth0. Chúng ta có thể kiểm tra ping ra internet trên vm1.
+
 ![](https://github.com/huynhducbk95/networking_document/blob/master/image/check_ping_vm1_gg.jpg?raw=true)
+
 Chúng ta cũng có thể sử dụng câu lệnh sau để xem thông tin các port và các VM đang kết nối đến br0.
 ```
 # ovs-appctl fdb/show br0
 
 ```
 Kết quả hiển thị như sau:
+
 ![](https://github.com/huynhducbk95/networking_document/blob/master/image/appctl.jpg?raw=true)
 ## Kết luận
 Trên đây là như kiến thức cơ bản nhất về Open Vswitch. Bạn có thể tìm thấy tài liệu chi tiết về Open Vswitch trên trang web [openvswitch.org](http://openvswitch.org)
