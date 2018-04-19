@@ -4,17 +4,21 @@ Tài liệu này sẽ hướng dẫn cách cài đặt calico là core plugin ch
 Trong phần 1 này, chúng ta sẽ thực hiện cài đặt calico trong môi trường openstack.
 ## 1. Mô hình triển khai
 Cụm openstack gồm có 2 node: phiên bản `Pike`
+
 - Controller node: cài all in one
  - Hostname: controller
  - IP: 192.168.122.55
+
 - Compute node:
  - Hostname: compute
  - IP: 192.168.122.211
 
 Và 2 node docker container:
+
 - docker01 node:
  - Hostname: docker01
  - IP: 192.168.122.45
+
 - docker02 node:
  - Hostname: docker02
  - IP: 192.168.122.13
@@ -468,6 +472,21 @@ $ openstack network agent list
 | c955a5bc-a93c-4cf8-a42d-3bd1d03dca4c | Metadata agent                | controller | None              | :-)   | UP    | neutron-metadata-agent    |
 | fe408832-e381-43ee-b27b-9b55686a038d | Linux bridge agent            | compute    | None              | :-)   | UP    | neutron-linuxbridge-agent |
 +--------------------------------------+-------------------------------+------------+-------------------+-------+-------+---------------------------+
+
+```
+
+Sau khi cài đặt xong trên cả 2 node `controller` và `compute`. Openstack networking sẽ có các agent sau:
+```
+# openstack network agent list
++--------------------------------------+-------------------------------+------------+-------------------+-------+-------+------------------------+
+| ID                                   | Agent Type                    | Host       | Availability Zone | Alive | State | Binary                 |
++--------------------------------------+-------------------------------+------------+-------------------+-------+-------+------------------------+
+| 3a7e171a-516c-4bd9-a92d-76f4a1481e42 | Metadata agent                | compute    | None              | :-)   | UP    | neutron-metadata-agent |
+| 3d430845-b411-46c2-914c-e7ca40f19622 | Calico per-host agent (felix) | controller | None              | :-)   | UP    | calico-felix           |
+| 42143951-029f-4124-ae8b-8cf07fcccf7e | L3 agent                      | controller | nova              | :-)   | UP    | neutron-l3-agent       |
+| 7a328f02-6be3-4f3b-b74a-2d9e491fadf1 | Calico per-host agent (felix) | compute    | None              | :-)   | UP    | calico-felix           |
+| c955a5bc-a93c-4cf8-a42d-3bd1d03dca4c | Metadata agent                | controller | None              | :-)   | UP    | neutron-metadata-agent |
++--------------------------------------+-------------------------------+------------+-------------------+-------+-------+------------------------+
 
 ```
 
