@@ -1,11 +1,7 @@
-
-etcd -proxy on \
-     -listen-client-urls http://127.0.0.1:2379,http://127.0.0.1:4001 \
-     -initial-cluster database=http://192.168.122.55:2380
-
-
-# Docs install Calico trên Openstack All-in-one Openvswitch hoặc linuxbridge
+# Triển khai Calico trong môi trường openstack và docker container (phần 1)
 Tài liệu này sẽ hướng dẫn cách cài đặt calico là core plugin cho neutron service của openstack và network plugin cho docker container.
+
+Trong phần 1 này, chúng ta sẽ thực hiện cài đặt calico trong môi trường openstack.
 ## 1. Mô hình triển khai
 Cụm openstack gồm có 2 node: phiên bản `Pike`
 - Controller node: cài all in one
@@ -139,7 +135,7 @@ API version: 2
 
 NOTE: Calico được sử dụng trong tài liệu này có version là v2.6 và yêu cầu ETCD APIv2. Do đó, chúng ta cần sử dụng ETCD API version 2. Các version >3 của ETCD có hỗ trợ cả APIv2 và APIv3. Sử dụng biến môi trường `ETCDCTL_API=2` để thiết lập APIv2 cho cluster nếu cluster đang sử dụng APIv3.
 
-Kết thúc cài đặt ở `controller` node. Tiếp theo sẽ cài đặt ETCD proxy trên các node còn lại. Và các bước cài đặt này là tương tự trên các node. 
+Kết thúc cài đặt ở `controller` node. Tiếp theo sẽ cài đặt ETCD proxy trên các node còn lại. Và các bước cài đặt này là tương tự trên các node.
 
 NOTE: Thay đổi hostname và địa chỉ IP phù hợp với từng node
 #### Cài đặt ETCD cluster trên `compute` node
@@ -407,10 +403,20 @@ neutron agent-delete <agent-id>
 
 ### Tiếp tục với tất cả các openstack deplyoment
 Cài đặt các package bổ sung.
+
 NOTE: Nếu trên node `controller` có triển khai all in one, bước này không cần thực hiện.
 
 ```
 # apt-get install neutron-common neutron-dhcp-agent nova-api-metadata
+```
+
+Thực hiện upgrade và dist-upgrade để cập nhật Calico với các package của Openstack và namespace `dnsmasq`.
+
+NOTE: Nếu trên node `controller` có triển khai all in one, bước này không cần thực hiện.
+
+```
+# apt-get upgrade
+# apt-get dist-upgrade
 ```
 
 Tiếp theo, đối với các phiên bản Openstack từ Liberty về sau, chúng ta sử dụng `calico-dhcp-agent` để thay cho việc sử dụng `neutron-dhcp-agent'. Thực hiện bằng các câu lệnh sau:
@@ -442,7 +448,7 @@ FelixHostname = <hostname>
 ReportingIntervalSecs = 30
 ```
 
-Thay `<controller_ip>` và `<hostname>` phù hợp với ETCD cluster trên host đang triển khai.
+Thay `<controller_ip>` và `<hostname>` phù hợp với ETCD cluster trên host đang triển khai. Ở đây, tham số `EtcdAddr` là giá trị tại tham số `listen-client-urls` được thiết lập trong câu lệnh chạy ETCD proxy. Trong tài liệu này là `127.0.0.1:4001`. Và `hostname` là hostname của node đang cài đặt.
 
 Cuối cùng, restart `calico-felix`:
 
@@ -450,8 +456,49 @@ Cuối cùng, restart `calico-felix`:
 $ sudo service calico-felix restart
 ```
 
-Như vậy là chúng ta đã cài đặt thành công calico cho triển khai Openstack. Để kiểm tra cài đặt đã hoạt động đúng. Thực hiện các bước sau:
-- Kiểm tra các agent của openstack networking:
+Kiểm tra cài đặt bằng câu lệnh show list agent của openstack networking.
+
 ```
 $ openstack network agent list
++--------------------------------------+-------------------------------+------------+-------------------+-------+-------+---------------------------+
+| ID                                   | Agent Type                    | Host       | Availability Zone | Alive | State | Binary                    |
++--------------------------------------+-------------------------------+------------+-------------------+-------+-------+---------------------------+
+| 3d430845-b411-46c2-914c-e7ca40f19622 | Calico per-host agent (felix) | controller | None              | :-)   | UP    | calico-felix              |
+| 42143951-029f-4124-ae8b-8cf07fcccf7e | L3 agent                      | controller | nova              | :-)   | UP    | neutron-l3-agent          |
+| c955a5bc-a93c-4cf8-a42d-3bd1d03dca4c | Metadata agent                | controller | None              | :-)   | UP    | neutron-metadata-agent    |
+| fe408832-e381-43ee-b27b-9b55686a038d | Linux bridge agent            | compute    | None              | :-)   | UP    | neutron-linuxbridge-agent |
++--------------------------------------+-------------------------------+------------+-------------------+-------+-------+---------------------------+
+
 ```
+
+Tiếp theo, cấu hình BGP peering giữa các compute node. Calico sử dụng BGP để thực hiện kết nối L3 giữa các calico node. Có 2 kiểu BGP trong môi trường calico: BGP full mesh và BGP route reflector. Theo mặc định sẽ cấu hình theo full mesh, có nghĩa là phải thiết lập BGP peer giữa các cặp compute node.
+
+Thực hiện câu lệnh sau để tạo ra một BGP peer giữa `compute` node và `controller` node.
+
+Trên `controller` node:
+```
+calico-gen-bird-conf.sh 192.168.122.55 192.168.122.211 64512
+```
+Trên `compute` node:
+```
+calico-gen-bird-conf.sh 192.168.122.211 192.168.122.55 64512
+```
+
+Kiểm tra cấu hình bằng câu lệnh sau:
+```
+# birdc show protocols 
+BIRD 1.6.3 ready.
+name     proto    table    state  since       info
+kernel1  Kernel   master   up     12:08:42    
+device1  Device   master   up     12:08:42    
+direct1  Direct   master   up     12:08:42    
+N1       BGP      master   up     12:30:12    Established  
+```
+
+## Tổng kết
+
+Như vậy là chúng ta đã hoàn thành các bước cài đặt calico để sử dụng như core plugin cho Openstack. Tiếp theo, chúng ta có thể tạo network và instances sử dụng các câu lệnh Openstack như bình thường.
+
+Để hiểu rõ hơn về calico, về kiến trúc, về các hoạt động thay thế neutron-server và cách thực hiện các kết nối giữa các calico node. Chúng ta có thể tham khảo tài liệu tại trang web [https://docs.projectcalico.org](https://docs.projectcalico.org/v2.6/introduction/).
+
+Phần này, Chúng ta mới chỉ đề cập đến cài đặt calico trong môi trường openstack. Trong phần [tiếp theo](), chúng ta sẽ thực hiện các bước cài đặt calico trong môi trường docker container và cách kết hợp 2 môi trường openstack và docker container để có được kết nối giữa VM và container.
