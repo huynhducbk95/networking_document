@@ -5,7 +5,7 @@ Trong phần này, chúng ta sẽ cài đặt Calico sử dụng như network pl
 ## 1. Cài đặt ETCD proxy
 Đầu tiên, cài đặt ETCD proxy để proxy các request đến ETCD cluster mà openstack deployment đang sử dụng (cho mục đích tạo connection giữa các workload).
 
-Xem tại đây để thực hiện [tại đây](https://github.com/huynhducbk95/networking_document/blob/master/Calico_Document/calico_install.md#2-c%C3%A0i-%C4%91%E1%BA%B7t-etcd-cluster) để có thể cài đặt ETCD proxy trên từng node docker.
+Xem tại đây để thực hiện [tại đây](https://github.com/huynhducbk95/networking_document/blob/master/Calico_Document/calico_openstack.md#2-c%C3%A0i-%C4%91%E1%BA%B7t-etcd-cluster) để có thể cài đặt ETCD proxy trên từng node docker.
 
 ## 2. Cài đặt và cấu hình docker
 Tài liệu này không nêu ra chi tiết cài đặt docker, thông tin cụ thể về các bước cài đặt có thể tham khoản tại [docs.docker.com](https://docs.docker.com/).
