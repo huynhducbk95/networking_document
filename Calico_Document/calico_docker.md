@@ -103,36 +103,37 @@ Tạo một ipPool:
 - apiVersion: v1
   kind: ipPool
   metadata:
-    cidr: 10.10.10.0/24
+    cidr: 192.0.2.0/24
 EOF
 ```
 
 Tạo network với ipPool vừa được tạo ra ở trên với calico là plugin:
 
 ```
-# docker network create --driver calico --ipam-driver calico-ipam --subnet=10.10.10.0/24 my_net
+# docker network create --driver calico --ipam-driver calico-ipam --subnet=192.0.2.0/24 my_net
 ```
 
 Tạo 2 container với IP xác định từ pool trên:
 
 ```
-# docker run --net my_net --name my_workload5 --ip 10.10.10.5 -tid busybox
-# docker run --net my_net --name my_workload6 --ip 10.10.10.6 -tid busybox
+# docker run --net my_net --name my_workload2 --ip 192.0.2.2 -tid busybox
+# docker run --net my_net --name my_workload3 --ip 192.0.2.3 -tid busybox
 ```
 
 Kiểm tra IP của các container vừa được tạo ra bằng câu lệnh sau:
 
 ```
-# docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' my_workload5
+# docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' my_workload2
+192.0.2.2
 ```
 
 Tiếp theo, kiểm tra kết nối giữa hai container này:
 ```
-# docker attach my_workload5
-/ #  ping 10.10.10.6
-PING 10.10.10.6 (10.10.10.6): 56 data bytes
+# docker attach my_workload2
+/ #  ping 192.0.2.3
+PING 192.0.2.3 (192.0.2.3): 56 data bytes
 ^C
---- 10.10.10.6 ping statistics ---
+--- 192.0.2.3 ping statistics ---
 12 packets transmitted, 0 packets received, 100% packet loss
 ```
 
@@ -149,7 +150,7 @@ PING 192.168.122.45 (192.168.122.45): 56 data bytes
 12 packets transmitted, 0 packets received, 100% packet loss
 ```
 ```
-root@docker:~# tcpdump -i calif73b54c4622
+root@docker01:~# tcpdump -i calif73b54c4622
 tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
 listening on calif73b54c4622, link-type EN10MB (Ethernet), capture size 262144 bytes
 15:36:17.823026 IP 192.0.2.102 > docker01: ICMP echo request, id 3584, seq 2, length 64
