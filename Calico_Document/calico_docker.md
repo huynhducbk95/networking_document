@@ -135,3 +135,40 @@ PING 10.10.10.6 (10.10.10.6): 56 data bytes
 --- 10.10.10.6 ping statistics ---
 12 packets transmitted, 0 packets received, 100% packet loss
 ```
+
+:((
+
+Em dùng tcpdump 2 thằng interface của 2 container này ko thấy thằng reply packet về.
+Nếu em ping đến docker host thì vẫn thấy reply packet, nhưng ko show lên trong ouput
+
+```
+# ping 192.168.122.45
+PING 192.168.122.45 (192.168.122.45): 56 data bytes
+^C
+--- 192.168.122.45 ping statistics ---
+12 packets transmitted, 0 packets received, 100% packet loss
+```
+```
+root@docker:~# tcpdump -i calif73b54c4622
+tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+listening on calif73b54c4622, link-type EN10MB (Ethernet), capture size 262144 bytes
+15:36:17.823026 IP 192.0.2.102 > docker01: ICMP echo request, id 3584, seq 2, length 64
+15:36:17.823070 IP docker01 > 192.0.2.102: ICMP echo reply, id 3584, seq 2, length 64
+15:36:18.823253 IP 192.0.2.102 > docker01: ICMP echo request, id 3584, seq 3, length 64
+15:36:18.823316 IP docker01 > 192.0.2.102: ICMP echo reply, id 3584, seq 3, length 64
+15:36:19.823580 IP 192.0.2.102 > docker01: ICMP echo request, id 3584, seq 4, length 64
+15:36:19.823664 IP docker01 > 192.0.2.102: ICMP echo reply, id 3584, seq 4, length 64
+15:36:20.823828 IP 192.0.2.102 > docker01: ICMP echo request, id 3584, seq 5, length 64
+15:36:20.823901 IP docker01 > 192.0.2.102: ICMP echo reply, id 3584, seq 5, length 64
+15:36:20.827264 ARP, Request who-has 169.254.1.1 tell 192.0.2.102, length 28
+15:36:20.827279 ARP, Reply 169.254.1.1 is-at 32:82:ad:c5:c4:0d (oui Unknown), length 28
+15:36:21.824100 IP 192.0.2.102 > docker01: ICMP echo request, id 3584, seq 6, length 64
+15:36:21.824166 IP docker01 > 192.0.2.102: ICMP echo reply, id 3584, seq 6, length 64
+15:36:22.824399 IP 192.0.2.102 > docker01: ICMP echo request, id 3584, seq 7, length 64
+15:36:22.824458 IP docker01 > 192.0.2.102: ICMP echo reply, id 3584, seq 7, length 64
+15:36:23.824561 IP 192.0.2.102 > docker01: ICMP echo request, id 3584, seq 8, length 64
+15:36:23.824603 IP docker01 > 192.0.2.102: ICMP echo reply, id 3584, seq 8, length 64
+15:36:24.824816 IP 192.0.2.102 > docker01: ICMP echo request, id 3584, seq 9, length 64
+15:36:24.824886 IP docker01 > 192.0.2.102: ICMP echo reply, id 3584, seq 9, length 64
+
+```
