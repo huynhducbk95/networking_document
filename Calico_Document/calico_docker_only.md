@@ -1,4 +1,4 @@
-# Triển khai Calico trong môi trường openstack và docker container (phần 2)
+# Triển khai Calico l
 
 Trong phần này, chúng ta sẽ cài đặt Calico sử dụng như network plugin trên 2 node docker. Sau đó, kết nối các docker node và các openstack node để tạo ra một môi trường hoàn chỉnh.
 
