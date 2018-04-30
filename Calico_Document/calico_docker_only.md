@@ -1,7 +1,5 @@
 # Triển khai Calico là plugin cho docker network trong một docker node
 
-Trong phần này, chúng ta sẽ cài đặt Calico sử dụng như network plugin trên 2 node docker. Sau đó, kết nối các docker node và các openstack node để tạo ra một môi trường hoàn chỉnh.
-
 Docker node:
 - hostname: docker01
 - ip: 192.168.122.45
