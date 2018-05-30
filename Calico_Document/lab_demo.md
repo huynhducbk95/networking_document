@@ -3,6 +3,7 @@
 ### 1. Trên một máy ảo của máy chủ vật lý triển khai Openstack.
 
 **Framework**: Django.
+
 **Thư viện liên quan**:
 - Python 3
 - SQLAlchemy
