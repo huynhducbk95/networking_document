@@ -33,7 +33,7 @@ Dưới đây là các câu lệnh cài đặt docker:
 
 # apt-get update
 
-# apt-get install docker-ce
+# apt-get install docker-ce=17.12.1~ce-0~ubuntu
 ```
 
 Kiểm tra cài đặt docker bằng cách run container `hello-world`:
