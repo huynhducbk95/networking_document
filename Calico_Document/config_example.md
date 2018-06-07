@@ -21,14 +21,12 @@ cat << EOF | calicoctl create -f -
 - apiVersion: v1
   kind: policy
   metadata:
-    name: calico_net01
+    name: calico_network01
   spec:
     order: 0
-    selector: role == 'calico_net01'
+    selector: role == 'calico_network01'
     ingress:
     - action: allow
-      source:
-        selector: role == 'calico_net01'
     egress:
     - action: allow
 ```
